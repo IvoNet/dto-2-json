@@ -4,3 +4,5 @@ node_modules
 .DS_Store
 target
 __pycache__
+.menv_profile
+.java_version
