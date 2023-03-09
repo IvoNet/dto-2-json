@@ -45,26 +45,13 @@ public class Dto2Json {
         generateDummyJSON(clazz);
     }
 
-    public static void generateDummyJSON(final Class<?> clazz, final String... paths) throws IOException {
+    public static void generateDummyJSON(final Class<?> clazz) throws IOException {
         final StringWriter out = new StringWriter();
         try (final PrintWriter writer = new PrintWriter(out)) {
             writer.println(printObj(clazz));
             final JsonNode jsonNode = mapper.readTree(out.toString());
             final String prettyJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
             System.out.println(prettyJson);
-            if (paths == null || paths.length == 0) {
-                System.out.println(prettyJson);
-            } else {
-                Stream.of(paths).map(Paths::get)
-                        .forEach(path ->
-                        {
-                            try {
-                                Files.writeString(path, prettyJson);
-                            } catch (final IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-            }
         }
     }
 
@@ -86,7 +73,7 @@ public class Dto2Json {
         final Class<?> fieldType = field.getType();
         if (String.class.equals(fieldType)) {
             return name(fieldType);
-        } else if (Integer.class.equals(fieldType)) {
+        } else if (Integer.class.equals(fieldType) || Integer.TYPE.equals(fieldType)) {
             return name(fieldType);
         } else if (Enum.class.isAssignableFrom(fieldType)) {
             return printEnum(fieldType);
@@ -108,7 +95,7 @@ public class Dto2Json {
             return name(fieldType);
         } else if (BigDecimal.class.equals(fieldType)) {
             return name(fieldType);
-        } else if (Boolean.class.equals(fieldType)) {
+        } else if (Boolean.class.equals(fieldType) || Boolean.TYPE.equals(fieldType)) {
             return name(fieldType);
         } else {
             return printObj(fieldType);
@@ -117,11 +104,11 @@ public class Dto2Json {
 
     private static String printEnum(final Class<?> fieldType) {
         final Field[] declaredFields = fieldType.getDeclaredFields();
-        return "\"String of " + Arrays.stream(declaredFields)
+        return "\"[" + Arrays.stream(declaredFields)
                 .filter(field -> field.getType() == fieldType)
                 .map(Field::getName)
-                .collect(Collectors.joining(",")) +
-                "\"";
+                .collect(Collectors.joining("|")) +
+                "]\"";
     }
 
     private static Object name(final Class<?> fieldType) {
