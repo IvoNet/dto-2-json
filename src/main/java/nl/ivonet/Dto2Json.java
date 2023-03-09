@@ -4,14 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -37,7 +33,7 @@ public class Dto2Json {
 
     public static void main(final String[] args) throws IOException, ClassNotFoundException {
         if (args.length == 0) {
-            System.out.println("Usage: java Dto2Json <class> [output file]");
+            System.out.println("Please try again with better settings...");
             System.exit(1);
         }
         final ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -46,13 +42,9 @@ public class Dto2Json {
     }
 
     public static void generateDummyJSON(final Class<?> clazz) throws IOException {
-        final StringWriter out = new StringWriter();
-        try (final PrintWriter writer = new PrintWriter(out)) {
-            writer.println(printObj(clazz));
-            final JsonNode jsonNode = mapper.readTree(out.toString());
-            final String prettyJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
-            System.out.println(prettyJson);
-        }
+        final JsonNode jsonNode = mapper.readTree(printObj(clazz));
+        final String prettyJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
+        System.out.println(prettyJson);
     }
 
     private static String printObj(final Class<?> clazz) {
