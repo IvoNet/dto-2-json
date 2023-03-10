@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,7 +78,13 @@ public class Dto2Json {
             return name(fieldType);
         } else if (OffsetDateTime.class.equals(fieldType)) {
             return name(fieldType);
+        } else if (UUID.class.equals(fieldType)) {
+            return name(fieldType);
         } else if (Date.class.equals(fieldType)) {
+            return name(fieldType);
+        } else if (Long.class.equals(fieldType) || Long.TYPE.equals(fieldType)) {
+            return name(fieldType);
+        } else if (Float.class.equals(fieldType) || Float.TYPE.equals(fieldType)) {
             return name(fieldType);
         } else if (List.class.equals(fieldType)) {
             final ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
