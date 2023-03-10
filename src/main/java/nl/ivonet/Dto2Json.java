@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,6 +53,9 @@ public class Dto2Json {
         if (!visited.containsKey(clazz) || visited.get(clazz) <= 100) {
             visited.merge(clazz, 1, Integer::sum);
             final Field[] declaredFields = clazz.getDeclaredFields();
+            if (declaredFields.length == 0) {
+                return name(clazz).toString();
+            }
             return "{" +
                     Stream.of(declaredFields)
                             .filter(e -> !Modifier.isStatic(e.getModifiers()))
@@ -88,7 +92,14 @@ public class Dto2Json {
             return name(fieldType);
         } else if (List.class.equals(fieldType)) {
             final ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-            final Class<?> clazz = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+            final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            final Type[] actualTypeArguments1 = ((ParameterizedType) actualTypeArguments[0]).getActualTypeArguments();
+            final Class<?> clazz;
+            try {
+                clazz = ClassLoader.getSystemClassLoader().loadClass(actualTypeArguments1[0].getTypeName());
+            } catch (ClassNotFoundException e) {
+                return "\"[Probably a Generic typed List]\"";
+            }
             return String.format("[%s]", printObj(clazz));
         } else if (fieldType.isAssignableFrom(Number.class)) {
             return name(fieldType);

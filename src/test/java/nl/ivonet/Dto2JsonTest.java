@@ -2,6 +2,7 @@ package nl.ivonet;
 
 import nl.ivonet.dto.People;
 import nl.ivonet.dto.Person;
+import nl.ivonet.dto.ValidationResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,5 +90,19 @@ class Dto2JsonTest {
     }
 
     record MyRecord(String a, boolean b, int c) {
+    }
+
+    @Test
+    void genericTest() throws IOException {
+        Dto2Json.generateDummyJSON(ValidationResponse.class);
+        final var output = this.baos.toString();
+        assertThat(output).isEqualTo("""
+                {
+                  "actionMetadata" : {
+                    "metadata" : "String"
+                  },
+                  "processingData" : [ "DataCommon" ]
+                }
+                """);
     }
 }

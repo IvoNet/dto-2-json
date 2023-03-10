@@ -11,5 +11,6 @@
 MY_APP_LOCATION="${HOME}/dev/ivonet/dto-2-json/target/dto2json-jar-with-dependencies.jar"
 JARS=$(find . -name "*.jar" -type f -exec echo -n "{}:" \;)
 CLASSES=$(find . -type d -name "classes" -exec echo -n "{}:" \; )
+TEST_CLASSES=$(find . -type d -name "test-classes" -exec echo -n "{}:" \; )
 
-java -classpath "${MY_APP_LOCATION}:${JARS}${CLASSES}" nl.ivonet.Dto2Json "${1:-}"
+java -classpath "${MY_APP_LOCATION}:${JARS}${CLASSES}${TEST_CLASSES}" nl.ivonet.Dto2Json "${1:-}"
