@@ -8,6 +8,8 @@
 #fi
 #
 #MY_APP_LOCATION="${MY_PATH}/target/generate-json-jar-with-dependencies.jar"
+echo "assembling dependencies..."
+mvn dependency:copy-dependencies >/dev/null 2>1&
 MY_APP_LOCATION="${HOME}/dev/ivonet/dto-2-json/target/dto2json-jar-with-dependencies.jar"
 JARS=$(find . -name "*.jar" -type f -exec echo -n "{}:" \;)
 CLASSES=$(find . -type d -name "classes" -exec echo -n "{}:" \; )

@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -90,14 +91,28 @@ public class Dto2Json {
             return name(fieldType);
         } else if (Float.class.equals(fieldType) || Float.TYPE.equals(fieldType)) {
             return name(fieldType);
+        } else if (Short.class.equals(fieldType) || Short.TYPE.equals(fieldType)) {
+            return name(fieldType);
+        } else if (Character.class.equals(fieldType) || Character.TYPE.equals(fieldType)) {
+            return name(fieldType);
+        } else if (fieldType.isArray()) {
+            final Class<?> componentType = fieldType.getComponentType();
+            return String.format("[%s]", printObj(componentType));
+        } else if (Instant.class.equals(fieldType)) {
+            return "\"" + Instant.now().toString() + "\"";
         } else if (List.class.equals(fieldType)) {
             final ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
             final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-            final Type[] actualTypeArguments1 = ((ParameterizedType) actualTypeArguments[0]).getActualTypeArguments();
+            Type[] actualArgs;
+            try {
+                actualArgs = ((ParameterizedType) actualTypeArguments[0]).getActualTypeArguments();
+            } catch (final Exception ignored) {
+                actualArgs = actualTypeArguments;
+            }
             final Class<?> clazz;
             try {
-                clazz = ClassLoader.getSystemClassLoader().loadClass(actualTypeArguments1[0].getTypeName());
-            } catch (ClassNotFoundException e) {
+                clazz = ClassLoader.getSystemClassLoader().loadClass(actualArgs[0].getTypeName());
+            } catch (final ClassNotFoundException ignored) {
                 return "\"[Probably a Generic typed List]\"";
             }
             return String.format("[%s]", printObj(clazz));
